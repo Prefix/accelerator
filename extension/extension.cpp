@@ -60,6 +60,8 @@ struct PluginInfo {
 unsigned int plugin_count;
 PluginInfo plugins[256];
 
+char sm_version[32];
+
 #if defined _LINUX
 void (*SignalHandler)(int, siginfo_t *, void *);
 
@@ -85,6 +87,10 @@ static bool dumpCallback(const google_breakpad::MinidumpDescriptor& descriptor, 
 		sys_write(STDOUT_FILENO, "Failed to open metadata file!\n", 30);
 		return succeeded;
 	}
+
+	sys_write(extra, "sm_version=", 11);
+	sys_write(extra, sm_version, my_strlen(sm_version));
+	sys_write(extra, "\n", 1);
 
 	char pis[64];
 	char pds[32];
@@ -357,6 +363,14 @@ bool Accelerator::SDK_OnLoad(char *error, size_t maxlength, bool late)
 		i->NextPlugin();
 	}
 	delete i;
+
+	const ISMConVar *cvar = gamehelpers->FindConVar("sourcemod_version");
+	if (cvar) {
+		strcpy(sm_version, cvar->GetString());
+		cvar->Release();
+	} else {
+		strcpy(sm_version, "Missing cvar!");
+	}
 
 	return true;
 }

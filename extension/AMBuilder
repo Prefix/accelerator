@@ -42,6 +42,7 @@ def BuildExtension():
 	compiler['CXXINCLUDES'].append(os.path.join(AMBuild.cache['SOURCEMOD15'], 'public'))
 	compiler['CXXINCLUDES'].append(os.path.join(AMBuild.cache['SOURCEMOD15'], 'public', 'extensions'))
 	compiler['CXXINCLUDES'].append(os.path.join(AMBuild.cache['SOURCEMOD15'], 'public', 'sourcepawn'))
+	compiler['CXXINCLUDES'].append(os.path.join(AMBuild.cache['SOURCEMOD15'], 'sourcepawn', 'include'))
 
 	compiler['CXXINCLUDES'].append(os.path.join(AMBuild.sourceFolder, 'breakpad', 'src', 'src'))
 
