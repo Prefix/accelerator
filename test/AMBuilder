@@ -23,6 +23,7 @@ def BuildEverything():
 
 	binary.AddSourceFiles('test', [
 		'test.cpp',
+		'sha1.cpp',
 	])
 
 	if AMBuild.target['platform'] in ['linux']:
@@ -32,7 +33,22 @@ def BuildEverything():
 			os.lstat(link)
 		except:
 			extension.AddCommand(SymlinkCommand(link, target))
-		binary.AddObjectFiles(['libbreakpad_client.a'])
+
+		link = os.path.join(AMBuild.outputFolder, extension.workFolder, 'libbreakpad.a')
+		target = os.path.join(AMBuild.outputFolder, 'breakpad', 'src', 'libbreakpad.a')
+		try:
+			os.lstat(link)
+		except:
+			extension.AddCommand(SymlinkCommand(link, target))
+
+		link = os.path.join(AMBuild.outputFolder, extension.workFolder, 'libdisasm.a')
+		target = os.path.join(AMBuild.outputFolder, 'breakpad', 'src', 'third_party', 'libdisasm', 'libdisasm.a')
+		try:
+			os.lstat(link)
+		except:
+			extension.AddCommand(SymlinkCommand(link, target))
+
+		binary.AddObjectFiles(['libbreakpad_client.a', 'libbreakpad.a', 'libdisasm.a'])
 
 	elif AMBuild.target['platform'] in ['windows']:
 		libs = ['exception_handler', 'common']

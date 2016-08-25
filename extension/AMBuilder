@@ -16,11 +16,11 @@ def BuildBreakpad():
 	breakpad = AMBuild.AddJob('breakpad')
 
 	if AMBuild.target['platform'] in ['linux']:
-		if osutil.FileExists(os.path.join(AMBuild.outputFolder, 'breakpad', 'src', 'client', 'linux', 'libbreakpad_client.a')):
+		if osutil.FileExists(os.path.join(AMBuild.outputFolder, 'breakpad', 'src', 'client', 'linux', 'libbreakpad_client.a')) and osutil.FileExists(os.path.join(AMBuild.outputFolder, 'breakpad', 'src', 'libbreakpad.a')) and osutil.FileExists(os.path.join(AMBuild.outputFolder, 'breakpad', 'src', 'third_party', 'libdisasm', 'libdisasm.a')):
 			return
 
 		breakpad.AddCommand(ShellCommand('CXXFLAGS=-m32 CFLAGS=-m32 CPPFLAGS=-m32 ' + os.path.join(AMBuild.sourceFolder, 'breakpad', 'src', 'configure')))
-		breakpad.AddCommand(ShellCommand('make src/client/linux/libbreakpad_client.a'))
+		breakpad.AddCommand(ShellCommand('make src/client/linux/libbreakpad_client.a src/libbreakpad.a src/third_party/libdisasm/libdisasm.a'))
 
 	elif AMBuild.target['platform'] in ['windows']:
 		if osutil.FileExists(os.path.join(AMBuild.sourceFolder, 'breakpad', 'src', 'client', 'windows', 'handler', 'Release', 'lib', 'exception_handler.lib')):
@@ -73,7 +73,22 @@ def BuildExtension():
 			os.lstat(link)
 		except:
 			extension.AddCommand(SymlinkCommand(link, target))
-		binary.AddObjectFiles(['libbreakpad_client.a'])
+
+		link = os.path.join(AMBuild.outputFolder, extension.workFolder, 'libbreakpad.a')
+		target = os.path.join(AMBuild.outputFolder, 'breakpad', 'src', 'libbreakpad.a')
+		try:
+			os.lstat(link)
+		except:
+			extension.AddCommand(SymlinkCommand(link, target))
+
+		link = os.path.join(AMBuild.outputFolder, extension.workFolder, 'libdisasm.a')
+		target = os.path.join(AMBuild.outputFolder, 'breakpad', 'src', 'third_party', 'libdisasm', 'libdisasm.a')
+		try:
+			os.lstat(link)
+		except:
+			extension.AddCommand(SymlinkCommand(link, target))
+
+		binary.AddObjectFiles(['libbreakpad_client.a', 'libbreakpad.a', 'libdisasm.a'])
 
 	elif AMBuild.target['platform'] in ['windows']:
 		libs = ['exception_handler', 'common']
