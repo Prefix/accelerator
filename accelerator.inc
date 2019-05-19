@@ -14,7 +14,7 @@ forward void OnCrashUpdated(int num, const char [] crashId );
 /**
  * Do not edit below this line!
  */
-public Extension:__ext_accelerator = 
+public Extension __ext_accelerator = 
 {
 	name = "Accelerator",
 	file = "accelerator.ext",
